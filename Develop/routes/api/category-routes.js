@@ -1,9 +1,11 @@
 const router = require('express').Router();
-const { Category } = require('../../models/');
+const { Category, Product } = require('../../models/');
 
 router.get('/', async (req, res) => {
   try {
-    const dbCategoryData = await Category.findAll();
+    const dbCategoryData = await Category.findAll({
+      include: {model: Product}
+    });
     res.status(200).json(dbCategoryData);
   } catch (err) {
     console.log(err);
@@ -27,9 +29,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const setCategoryData = Category.create({
+    const setCategoryData = await Category.create({
       category_name: req.body.category_name,
     })
     res.status(200).send(setCategoryData);
@@ -39,9 +41,9 @@ router.post('/', (req, res) => {
   }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   try{
-    const putCategoryData = Category.update(
+    const putCategoryData = await Category.update(
       {category_name: req.body.category_name},
       {where: {
           id: req.params.id
@@ -54,14 +56,14 @@ router.put('/:id', (req, res) => {
   }
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    const destroyCategory = Category.destroy(
+    const destroyCategory = await Category.destroy(
       {where: {
           id: req.params.id
         }
   })
-    res.status(200).send(destroyCategory)
+  res.sendStatus(200)
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

@@ -33,9 +33,9 @@ router.get('/:id', async (req, res) => {
   // be sure to include its associated Product data
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try{
-    const postTag = Tag.create({tag_name: req.params.tag_name})
+    const postTag = await Tag.create({tag_name: req.body.tag_name})
     res.status(200).send(postTag)
   } catch(err){
     console.log(err)
@@ -43,9 +43,13 @@ router.post('/', (req, res) => {
   }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
  try{ 
-    const updateTag = Tag.update({tag_name: req.params.id})
+    const updateTag = await Tag.update({tag_name: req.body.tag_name},
+      {where: {
+        id: req.params.id
+      }
+  })
     res.status(200).send(updateTag)
 } catch(err){
     console.log(err)
@@ -53,9 +57,10 @@ router.put('/:id', (req, res) => {
 }
 });
 
-router.delete('/:id', (req, res) => {
-try{ const deleteTag = Tag.destroy({id: req.params.id})
-    res.status(200).send(deleteTag);
+router.delete('/:id', async (req, res) => {
+try{ 
+    const deleteTag = await Tag.destroy({where: {id: req.params.id}})
+    res.sendStatus(200)
 } catch(err){
     console.log(err)
     res.status(500).send(err)

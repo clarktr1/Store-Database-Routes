@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
-// The `/api/products` endpoint
 
 // get all products
 router.get('/', async (req, res) => {
@@ -27,7 +26,6 @@ router.get('/:id', async (req, res) => {
       },
       include: {
         model: Category,
-        model: Tag,
       },
     });
     res.status(200).send(getProducts)
@@ -108,13 +106,19 @@ router.put('/:id', (req, res) => {
     })
     .then((updatedProductTags) => res.json(updatedProductTags))
     .catch((err) => {
-      // console.log(err);
+      console.log(err);
       res.status(400).json(err);
     });
 });
 
-router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+router.delete('/:id', async (req, res) => {
+  try{ 
+    const deleteProduct = await Product.destroy({where: {id:req.params.id}});
+    res.sendStatus(200)
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err);
+  }
 });
 
 module.exports = router;
